@@ -21,8 +21,12 @@ const addEmployee = async (req, res) => {
       kata_sandi: hashPassword,
       devisiId: devisiId || "a9b6efa2-52e7-11ee-89fb-a5765d73286f",
       roleId,
-      status,
+      status: status || true,
     });
+
+    return res
+      .status(200)
+      .json({ meta: { status: 200, message: "Berhasil Tambah Karyawan" } });
   } catch (error) {
     console.log(error);
   }
