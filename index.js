@@ -1,14 +1,16 @@
 const express = require("express");
-const app = express();
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 const dotenv = require("dotenv");
 const db = require("./models");
+const cors = require("cors");
 
 const port = 3000;
+const app = express();
 
 dotenv.config();
 app.use(express.json());
+app.use(cors({ credentials: true }));
 
 // Synchronize model-model dengan database
 (async () => {
@@ -26,7 +28,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get("/", (req, res) => {
   res.send("Selamat datang di Express!");
 });
-app.use("/user", userRoute);
+app.use("/", userRoute);
 
 app.listen(port, () => {
   console.log(`Server berjalan di http://localhost:${port}`);

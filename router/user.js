@@ -1,8 +1,16 @@
 const express = require("express");
-const { login, addEmployee } = require("../controller/user");
+const {
+  login,
+  addEmployee,
+  getAll,
+  getUserbyId,
+} = require("../controller/user");
+const verifyToken = require("../middleware/verifyToken");
 const router = express.Router();
 
-router.post(`/`, addEmployee);
-router.post("/login", login);
+router.post(`/user`, addEmployee);
+router.post("/user/login", login);
+router.get("/user", getAll);
+router.get("/profile", verifyToken, getUserbyId);
 
 module.exports = router;
