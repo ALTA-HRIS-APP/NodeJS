@@ -88,7 +88,6 @@ const getAll = async (req, res) => {
 };
 
 const getUserbyId = async (req, res) => {
-  console.log(req.user);
   try {
     const findbyId = await User.findOne({
       where: {
@@ -113,4 +112,35 @@ const getUserbyId = async (req, res) => {
   }
 };
 
-module.exports = { addEmployee, login, getAll, getUserbyId };
+const getUserbyIdParams = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findUser = await User.findOne({
+      where: {
+        id: id,
+      },
+      include: [
+        {
+          model: Devisi,
+          as: "devisi",
+        },
+        { model: Role, as: "role" },
+      ],
+    });
+
+    if (!findUser) {
+      return res
+        .status(404)
+        .json({ meta: { status: 404, message: "User Tidak Ditemukan" } });
+    } else {
+      return res
+        .status(200)
+        .json({ meta: { status: 200, message: "Berhasil" }, data: findUser });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = { addEmployee, login, getAll, getUserbyId, getUserbyIdParams };

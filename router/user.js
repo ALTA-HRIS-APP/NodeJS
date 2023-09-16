@@ -4,8 +4,12 @@ const {
   addEmployee,
   getAll,
   getUserbyId,
+  getUserbyIdParams,
 } = require("../controller/user");
-const verifyToken = require("../middleware/verifyToken");
+const {
+  verifyToken,
+  verifyTokenSuperAdmin,
+} = require("../middleware/verifyToken");
 const {
   loginValidation,
   addEmployeeValidation,
@@ -16,5 +20,7 @@ router.post(`/user`, addEmployeeValidation, addEmployee);
 router.post("/login", loginValidation, login);
 router.get("/user", getAll);
 router.get("/profile", verifyToken, getUserbyId);
+router.put("/user/role", verifyTokenSuperAdmin);
+router.get("/user/:id", getUserbyIdParams);
 
 module.exports = router;
