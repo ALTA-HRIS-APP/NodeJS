@@ -1,4 +1,5 @@
 const db = require("../models");
+const Role = db.role;
 const User = db.user;
 
 const loginValidation = async (req, res, next) => {
@@ -71,7 +72,102 @@ const addEmployeeValidation = async (req, res, next) => {
       .json({ meta: { status: 400, message: "role tidak boleh kosong" } });
   }
 
+  const findRole = await Role.findOne({
+    where: {
+      id: roleId,
+    },
+  });
+
+  if (findRole.nama === "superadmin") {
+    if (jabatan !== "c-level") {
+      return res.status(404).json({
+        meta: { status: 404, message: "Role di peruntukkan jabatan c-level" },
+      });
+    }
+  } else if (findRole.nama === "admin") {
+    if (jabatan !== "manager" || jabatan !== "hr") {
+      return res.status(404).json({
+        meta: {
+          status: 404,
+          message: "Role di peruntukkan jabatan manager dan hr",
+        },
+      });
+    }
+  } else if (findRole.nama === "user") {
+    if (jabatan !== "karyawan") {
+      return res.status(404).json({
+        meta: {
+          status: 404,
+          message: "Role di peruntukkan jabatan karyawan",
+        },
+      });
+    }
+  } else {
+    return res
+      .status(404)
+      .json({ meta: { status: 404, message: "jabatan tidak ditemukan" } });
+  }
+
   next();
 };
 
-module.exports = { loginValidation, addEmployeeValidation };
+const editRoleValidation = async (req, res, next) => {
+  const { idUser } = req.query;
+  const { roleId, jabatan } = req.body;
+
+  const findUser = await User.findOne({
+    where: {
+      id: idUser,
+    },
+  });
+
+  if (!findUser) {
+    return res
+      .status(404)
+      .json({ meta: { status: 404, message: "Karyawan tidak ditemukan" } });
+  }
+  const findRole = await Role.findOne({
+    where: {
+      id: roleId,
+    },
+  });
+
+  if (!findRole) {
+    return res
+      .status(404)
+      .json({ meta: { status: 404, message: "Role Tidak Ditemukan" } });
+  }
+  if (findRole.nama === "superadmin") {
+    if (jabatan !== "c-level") {
+      return res.status(404).json({
+        meta: { status: 404, message: "Role di peruntukkan jabatan c-level" },
+      });
+    }
+  } else if (findRole.nama === "admin") {
+    if (jabatan !== "manager" || jabatan !== "hr") {
+      return res.status(404).json({
+        meta: {
+          status: 404,
+          message: "Role di peruntukkan jabatan manager dan hr",
+        },
+      });
+    }
+  } else if (findRole.nama === "user") {
+    if (jabatan !== "karyawan") {
+      return res.status(404).json({
+        meta: {
+          status: 404,
+          message: "Role di peruntukkan jabatan karyawan",
+        },
+      });
+    }
+  } else {
+    return res
+      .status(404)
+      .json({ meta: { status: 404, message: "jabatan tidak ditemukan" } });
+  }
+
+  next();
+};
+
+module.exports = { loginValidation, addEmployeeValidation, editRoleValidation };
