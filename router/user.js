@@ -10,6 +10,7 @@ const {
 const {
   verifyToken,
   verifyTokenSuperAdmin,
+  verifyTokenAdmin,
 } = require("../middleware/verifyToken");
 const {
   loginValidation,
@@ -18,7 +19,7 @@ const {
 } = require("../middleware/user");
 const router = express.Router();
 
-router.post(`/user`, addEmployeeValidation, addEmployee);
+router.post(`/user`, verifyTokenAdmin, addEmployeeValidation, addEmployee);
 router.post("/login", loginValidation, login);
 router.get("/user", getAll);
 router.get("/profile", verifyToken, getUserbyId);

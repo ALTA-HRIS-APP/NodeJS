@@ -19,7 +19,7 @@ const addEmployee = async (req, res) => {
       no_hp,
       jabatan,
       kata_sandi: hashPassword,
-      devisiId: devisiId || "a9b6efa2-52e7-11ee-89fb-a5765d73286f",
+      devisiId: devisiId || "acb3560c-1b1e-41e2-8462-af8d0b7ef239",
       roleId,
       status: status || true,
     });
