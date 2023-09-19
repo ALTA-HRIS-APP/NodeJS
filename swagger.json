@@ -247,6 +247,122 @@
             }
           }
         }
+      },
+      "post": {
+        "description": "Tambah User",
+        "tags": ["User"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "nama_lengkap",
+                  "surel",
+                  "no_hp",
+                  "jabatan",
+                  "devisiId",
+                  "roleId",
+                  "status"
+                ],
+                "properties": {
+                  "nama_lengkap": {
+                    "type": "string"
+                  },
+                  "surel": {
+                    "type": "string"
+                  },
+                  "no_hp": {
+                    "type": "string"
+                  },
+                  "jabatan": {
+                    "type": "string"
+                  },
+                  "devisiId": {
+                    "type": "string",
+                    "description": "jika tidak di isi maka menjadi tidak ada devisi seperti c-level atau hr"
+                  },
+                  "roleId": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": "jika tidak maka secara otomatis terisi true"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Berhasil Tambah Karyawan"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error brand not found or didn't inserted the required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email Telah Digunakan"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/user/{id}": {

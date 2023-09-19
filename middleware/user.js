@@ -85,7 +85,7 @@ const addEmployeeValidation = async (req, res, next) => {
       });
     }
   } else if (findRole.nama === "admin") {
-    if (jabatan !== "manager" || jabatan !== "hr") {
+    if (jabatan !== "manager" && jabatan !== "hr") {
       return res.status(404).json({
         meta: {
           status: 404,
