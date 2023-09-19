@@ -5,6 +5,7 @@ const {
   getAll,
   getUserbyId,
   getUserbyIdParams,
+  editRole,
 } = require("../controller/user");
 const {
   verifyToken,
@@ -13,6 +14,7 @@ const {
 const {
   loginValidation,
   addEmployeeValidation,
+  editRoleValidation,
 } = require("../middleware/user");
 const router = express.Router();
 
@@ -20,7 +22,7 @@ router.post(`/user`, addEmployeeValidation, addEmployee);
 router.post("/login", loginValidation, login);
 router.get("/user", getAll);
 router.get("/profile", verifyToken, getUserbyId);
-router.put("/user/role", verifyTokenSuperAdmin);
+router.put("/user/role", verifyTokenSuperAdmin, editRoleValidation, editRole);
 router.get("/user/:id", getUserbyIdParams);
 
 module.exports = router;

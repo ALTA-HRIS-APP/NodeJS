@@ -74,9 +74,11 @@ const getAll = async (req, res) => {
         {
           model: Devisi,
           as: "devisi",
+          attributes: ["nama"],
         },
-        { model: Role, as: "role" },
+        { model: Role, as: "role", attributes: ["nama"] },
       ],
+      attributes: ["nama_lengkap", "surel", "no_hp", "jabatan", "status"],
     });
 
     return res
@@ -143,4 +145,32 @@ const getUserbyIdParams = async (req, res) => {
   }
 };
 
-module.exports = { addEmployee, login, getAll, getUserbyId, getUserbyIdParams };
+const editRole = async (req, res) => {
+  const { idUser } = req.query;
+  const { roleId, jabatan } = req.body;
+
+  try {
+    await User.update(
+      { roleId: roleId, jabatan: jabatan },
+      {
+        where: {
+          id: idUser,
+        },
+      }
+    );
+    return res
+      .status(200)
+      .json({ meta: { status: 200, message: "Berhasil Edit Role User" } });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = {
+  addEmployee,
+  login,
+  getAll,
+  getUserbyId,
+  getUserbyIdParams,
+  editRole,
+};

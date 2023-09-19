@@ -23,12 +23,14 @@ app.use(cors({ credentials: true }));
 })();
 
 const userRoute = require("./router/user");
+const devisiRoute = require("./router/devisi");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/", (req, res) => {
   res.send("Selamat datang di Express!");
 });
 app.use("/", userRoute);
+app.use("/", devisiRoute);
 
 app.listen(port, () => {
   console.log(`Server berjalan di http://localhost:${port}`);
