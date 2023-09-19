@@ -32,6 +32,10 @@ const User = sequelize.define("User", {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
+  employee_status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
     defaultValue: Sequelize.NOW,

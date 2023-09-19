@@ -17,6 +17,7 @@ const {
   addEmployeeValidation,
   editRoleValidation,
 } = require("../middleware/user");
+const db = require("../models");
 const router = express.Router();
 
 router.post(`/user`, verifyTokenAdmin, addEmployeeValidation, addEmployee);

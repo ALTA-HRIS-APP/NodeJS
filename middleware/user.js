@@ -23,8 +23,16 @@ const loginValidation = async (req, res, next) => {
 };
 
 const addEmployeeValidation = async (req, res, next) => {
-  const { nama_lengkap, surel, no_hp, jabatan, devisiId, roleId, status } =
-    req.body;
+  const {
+    nama_lengkap,
+    surel,
+    no_hp,
+    jabatan,
+    devisiId,
+    roleId,
+    status,
+    employee_status,
+  } = req.body;
 
   if (!nama_lengkap) {
     return res.status(400).json({
@@ -106,6 +114,12 @@ const addEmployeeValidation = async (req, res, next) => {
     return res
       .status(404)
       .json({ meta: { status: 404, message: "jabatan tidak ditemukan" } });
+  }
+
+  if (!employee_status) {
+    return res
+      .status(400)
+      .json({ meta: { status: 400, message: "employee_status harus di isi" } });
   }
 
   next();

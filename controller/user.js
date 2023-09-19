@@ -6,8 +6,16 @@ const Devisi = db.devisi;
 const Role = db.role;
 
 const addEmployee = async (req, res) => {
-  const { nama_lengkap, surel, no_hp, jabatan, devisiId, roleId, status } =
-    req.body;
+  const {
+    nama_lengkap,
+    surel,
+    no_hp,
+    jabatan,
+    devisiId,
+    roleId,
+    status,
+    employee_status,
+  } = req.body;
 
   try {
     const salt = await bcrypt.genSalt();
@@ -19,9 +27,10 @@ const addEmployee = async (req, res) => {
       no_hp,
       jabatan,
       kata_sandi: hashPassword,
-      devisiId: devisiId || "acb3560c-1b1e-41e2-8462-af8d0b7ef239",
+      devisiId: devisiId || "b256efa8-56ea-11ee-9bcf-fcc1d3dbd38e",
       roleId,
       status: status || true,
+      employee_status,
     });
 
     return res
@@ -78,7 +87,15 @@ const getAll = async (req, res) => {
         },
         { model: Role, as: "role", attributes: ["nama"] },
       ],
-      attributes: ["nama_lengkap", "surel", "no_hp", "jabatan", "status"],
+      attributes: [
+        "id",
+        "nama_lengkap",
+        "surel",
+        "no_hp",
+        "jabatan",
+        "status",
+        "employee_status",
+      ],
     });
 
     return res

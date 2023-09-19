@@ -11,6 +11,14 @@ const Role = sequelize.define("Role", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  description: {
+    type: DataTypes.STRING,
+    defaultValue: null,
+  },
+  status: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
     defaultValue: Sequelize.NOW,
