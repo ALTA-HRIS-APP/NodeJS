@@ -4,6 +4,7 @@ const db = require("../models");
 const User = db.user;
 const Devisi = db.devisi;
 const Role = db.role;
+cons company = db.company
 
 const addEmployee = async (req, res) => {
   const {
