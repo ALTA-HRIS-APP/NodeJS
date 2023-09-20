@@ -22,6 +22,24 @@ const loginValidation = async (req, res, next) => {
   next();
 };
 
+const editPasswordValidation = async (req, res, next) => {
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword) {
+    return res.status(400).json({
+      meta: { status: 400, message: "Kata sandi lama harus diisi" },
+    });
+  }
+
+  if (!newPassword) {
+    return res.status(400).json({
+      meta: { status: 400, message: "Kata sandi baru harus diisi" },
+    });
+  }
+
+  next();
+};
+
 const addEmployeeValidation = async (req, res, next) => {
   const {
     nama_lengkap,
@@ -184,4 +202,50 @@ const editRoleValidation = async (req, res, next) => {
   next();
 };
 
-module.exports = { loginValidation, addEmployeeValidation, editRoleValidation };
+const validateDevisiChange = async (req, res, next) => {
+  const { userId } = req.params;
+  const { devisiId } = req.body;
+
+  const findUser = await User.findOne({
+    where: {
+      id: idUser,
+    },
+  });
+
+  if (!findUser) {
+    return res
+      .status(404)
+      .json({ meta: { status: 404, message: "pengguna tidak ditemukan" } });
+  }
+
+  const findUser = await User.findOne({
+    where: {
+      id: idUser,
+    },
+  });
+
+  if (!findUser) {
+    return res
+      .status(404)
+      .json({ meta: { status: 404, message: "Karyawan tidak ditemukan" } });
+  }
+  try {
+    const user = req.user;
+    if (devisiId && user.devisiId === devisiId) {
+      return res.status(400).json({
+        meta: {
+          status: 400,
+          message: "Pengguna sudah berada di devisi yang sama",
+        },
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ meta: { status: 500, message: "Terjadi kesalahan server" } });
+  };
+
+module.exports = { loginValidation, addEmployeeValidation, editRoleValidation, editPasswordValidation, validateDevisiChange };

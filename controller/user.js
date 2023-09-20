@@ -76,6 +76,45 @@ const login = async (req, res) => {
   }
 };
 
+const editPassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const userId = req.user.id; 
+    const user = await User.findOne({ where: { id: userId } });
+    const isPasswordMatch = await bcrypt.compare(oldPassword, user.kata_sandi);
+
+    if (!isPasswordMatch) {
+      return res
+        .status(400)
+        .json({ meta: { status: 400, message: "Kata sandi lama salah" } });
+    }
+
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    await User.update(
+      { kata_sandi: hashPassword },
+      {
+        where: { id: userId },
+      }
+    );
+
+    return res
+      .status(200)
+      .json({ meta: { status: 200, message: "Kata sandi berhasil diubah" } });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ meta: { status: 500, message: "Terjadi kesalahan server" } });
+  }
+};
+
 const getAll = async (req, res) => {
   try {
     const find = await User.findAll({
@@ -183,11 +222,56 @@ const editRole = async (req, res) => {
   }
 };
 
+const changeUserDevisi = async (req, res) => {
+  const { userId } = req.params; // ID pengguna yang akan diubah devisinya
+  const { devisiId } = req.body; // ID devisi baru
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ meta: { status: 404, message: "Pengguna tidak ditemukan" } });
+    }
+
+    if (devisiId && user.devisiId === devisiId) {
+      return res.status(400).json({
+        meta: {
+          status: 400,
+          message: "Pengguna sudah berada di devisi yang sama",
+        },
+      });
+    }
+
+    const devisi = await Devisi.findByPk(devisiId);
+
+    if (!devisi) {
+      return res
+        .status(404)
+        .json({ meta: { status: 404, message: "Devisi tidak ditemukan" } });
+    }
+
+    user.devisiId = devisiId;
+    await user.save();
+
+    return res.status(200).json({
+      meta: { status: 200, message: "Devisi pengguna berhasil diubah" },
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ meta: { status: 500, message: "Terjadi kesalahan server" } });
+  }
+};
+
 module.exports = {
   addEmployee,
   login,
+  editPassword
   getAll,
   getUserbyId,
   getUserbyIdParams,
   editRole,
+  changeUserDevisi
 };
