@@ -1,10 +1,14 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../models");
+const fs = require("fs");
+const cloudinary = require("../middleware/cloudinary");
+const CryptoJS = require("crypto-js");
 const User = db.user;
 const Devisi = db.devisi;
 const Role = db.role;
-cons company = db.company
+const company = db.company;
+const Persdocs = db.persdocs;
 
 const addEmployee = async (req, res) => {
   const {
@@ -64,7 +68,7 @@ const login = async (req, res) => {
       { emails, id, role },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "600s",
+        expiresIn: "1h",
       }
     );
 
@@ -85,7 +89,7 @@ const editPassword = async (req, res) => {
   }
 
   try {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const user = await User.findOne({ where: { id: userId } });
     const isPasswordMatch = await bcrypt.compare(oldPassword, user.kata_sandi);
 
@@ -126,6 +130,7 @@ const getAll = async (req, res) => {
           attributes: ["nama"],
         },
         { model: Role, as: "role", attributes: ["nama"] },
+        { model: Persdocs, as: "persdocs" },
       ],
       attributes: [
         "id",
@@ -266,13 +271,185 @@ const changeUserDevisi = async (req, res) => {
   }
 };
 
+const uploudPersDocs = async (req, res) => {
+  const { no_kk, no_npwp, no_bpjs } = req.body;
+  const { url_kk, url_bpjs, url_npwp } = req.files;
+  const { id } = req.params;
+  console.log(id);
+
+  try {
+    const findUser = await User.findOne({
+      where: {
+        id: id,
+      },
+    });
+    function generateFileName(file) {
+      const timestamp = Date.now();
+      const randomString = CryptoJS.lib.WordArray.random(10 / 2).toString(
+        CryptoJS.enc.Hex
+      );
+      const originalFileName = file[0].originalname.replace(/\s/g, "_");
+      const safeFileName = `${timestamp}_${randomString}_${originalFileName}`;
+      return safeFileName.replace(/\.[^.]*$/, "");
+    }
+
+    const findPersdocs = await Persdocs.findOne({
+      where: {
+        userId: findUser.id,
+      },
+    });
+
+    if (!findPersdocs) {
+      const filesToUpload = [
+        {
+          path: url_npwp,
+          name: "npwp",
+        },
+        {
+          path: url_kk,
+          name: "kk",
+        },
+        {
+          path: url_bpjs,
+          name: "bpjs",
+        },
+      ];
+
+      const imageUrl = {};
+      for (const file of filesToUpload) {
+        const uploud = await cloudinary.uploader.upload(file.path[0].path, {
+          folder: "project2",
+          public_id: `${file.name}/${findUser.nama_lengkap}_${generateFileName(
+            file.path
+          )}`,
+          overwrite: true,
+        });
+        let imageUrls = {
+          url: uploud.secure_url,
+          idPublic: uploud.public_id,
+        };
+        const folders = file.path[0].fieldname.split("/")[0];
+        imageUrl[folders] = imageUrls;
+        fs.unlinkSync(file.path[0].path);
+      }
+      await Persdocs.create({
+        no_kk: no_kk,
+        no_npwp: no_npwp,
+        no_bpjs: no_bpjs,
+        url_kk: imageUrl.url_kk,
+        url_bpjs: imageUrl.url_bpjs,
+        url_npwp: imageUrl.url_npwp,
+        userId: findUser.id,
+      });
+    } else {
+      let url = [
+        {
+          url: !url_kk ? "" : JSON.parse(findPersdocs.url_kk).idPublic,
+          file: url_kk || "",
+        },
+        {
+          url: !url_npwp ? "" : JSON.parse(findPersdocs.url_npwp).idPublic,
+          file: url_npwp || "",
+        },
+        {
+          url: !url_bpjs ? "" : JSON.parse(findPersdocs.url_bpjs).idPublic,
+          file: url_bpjs || "",
+        },
+      ];
+      const imageUrl = {};
+
+      for (const urls of url) {
+        if (urls.url.length !== 0) {
+          cloudinary.uploader.destroy(urls.url, (error, result) => {
+            if (error) {
+              console.error("Error deleting image:", error);
+            } else {
+              console.log("Image deleted successfully");
+            }
+          });
+
+          const uploud = await cloudinary.uploader.upload(urls.file[0].path, {
+            folder: "project2",
+            public_id: `${urls.file[0].fieldname.split("_")[1]}/${
+              findUser.nama_lengkap
+            }_${generateFileName([urls.file[0]])}`,
+            overwrite: true,
+          });
+          let imageUrls = {
+            url: uploud.secure_url,
+            idPublic: uploud.public_id,
+          };
+          const folders = urls.file[0].fieldname;
+          imageUrl[folders] = imageUrls;
+          fs.unlinkSync(urls.file[0].path);
+
+          if (folders === "url_kk") {
+            await Persdocs.update(
+              {
+                url_kk: imageUrl.url_kk || findPersdocs.url_kk,
+              },
+              {
+                where: {
+                  id: findPersdocs.id,
+                },
+              }
+            );
+          } else if (folders === "url_npwp") {
+            await Persdocs.update(
+              {
+                url_npwp: imageUrl.url_npwp || findPersdocs.url_npwp,
+              },
+              {
+                where: {
+                  id: findPersdocs.id,
+                },
+              }
+            );
+          } else if (folders === "url_bpjs") {
+            await Persdocs.update(
+              {
+                url_bpjs: imageUrl.url_bpjs || findPersdocs.url_bpjs,
+              },
+              {
+                where: {
+                  id: findPersdocs.id,
+                },
+              }
+            );
+          }
+        }
+      }
+
+      await Persdocs.update(
+        {
+          no_kk: no_kk || findPersdocs.no_kk,
+          no_npwp: no_npwp || findPersdocs.no_npwp,
+          no_bpjs: no_bpjs || findPersdocs.no_bpjs,
+        },
+        {
+          where: {
+            id: findPersdocs.id,
+          },
+        }
+      );
+    }
+
+    return res
+      .status(200)
+      .json({ meta: { status: 200, message: "Berhasil update docs user" } });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   addEmployee,
   login,
-  editPassword
+  editPassword,
   getAll,
   getUserbyId,
   getUserbyIdParams,
   editRole,
-  changeUserDevisi
+  changeUserDevisi,
+  uploudPersDocs,
 };

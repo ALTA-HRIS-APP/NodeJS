@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
 app.use("/", userRoute);
 app.use("/", devisiRoute);
 app.use("/", roleRoute);
-app.use("/", detailcompanyRoute);
+// app.use("/", detailcompanyRoute); -- fundtion route belom di panggil
 
 app.listen(port, () => {
   console.log(`Server berjalan di http://localhost:${port}`);

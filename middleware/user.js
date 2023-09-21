@@ -1,6 +1,8 @@
 const db = require("../models");
+const { url } = require("./cloudinary");
 const Role = db.role;
 const User = db.user;
+const Persdocs = db.persdocs;
 
 const loginValidation = async (req, res, next) => {
   const { email } = req.body;
@@ -218,17 +220,6 @@ const validateDevisiChange = async (req, res, next) => {
       .json({ meta: { status: 404, message: "pengguna tidak ditemukan" } });
   }
 
-  const findUser = await User.findOne({
-    where: {
-      id: idUser,
-    },
-  });
-
-  if (!findUser) {
-    return res
-      .status(404)
-      .json({ meta: { status: 404, message: "Karyawan tidak ditemukan" } });
-  }
   try {
     const user = req.user;
     if (devisiId && user.devisiId === devisiId) {
@@ -246,6 +237,70 @@ const validateDevisiChange = async (req, res, next) => {
     return res
       .status(500)
       .json({ meta: { status: 500, message: "Terjadi kesalahan server" } });
-  };
+  }
+};
 
-module.exports = { loginValidation, addEmployeeValidation, editRoleValidation, editPasswordValidation, validateDevisiChange };
+const editPersDocsValidation = async (req, res, next) => {
+  const { no_kk, no_npwp, no_bpjs } = req.body;
+  const { url_kk, url_bpjs, url_npwp } = req.files;
+  const { id } = req.params;
+
+  const findUser = await User.findOne({
+    where: {
+      id: id,
+    },
+  });
+  if (!findUser) {
+    return res.status(404).json({
+      meta: { status: 404, message: `User dengan id ${id} tidak ditemukan` },
+    });
+  }
+
+  const findPersDocs = await Persdocs.findOne({
+    where: {
+      userId: findUser.id,
+    },
+  });
+
+  if (!findPersDocs) {
+    if (!no_kk) {
+      return res
+        .status(400)
+        .json({ meta: { status: 400, message: "nomer kk harus di isi " } });
+    } else if (!no_npwp) {
+      return res
+        .status(400)
+        .json({ meta: { status: 400, message: "nomer npwp harus di isi " } });
+    } else if (!no_bpjs) {
+      return res
+        .status(400)
+        .json({ meta: { status: 400, message: "nomer bpjs harus di isi " } });
+    }
+
+    if (!url_kk) {
+      return res
+        .status(400)
+        .json({ meta: { status: 400, message: "harus uploud file kk" } });
+    } else if (!url_bpjs) {
+      return res
+        .status(400)
+        .json({ meta: { status: 400, message: "harus uploud file bpjs" } });
+    } else if (!url_npwp) {
+      return res
+        .status(400)
+        .json({ meta: { status: 400, message: "harus uploud file npwp" } });
+    }
+    next();
+  } else {
+    next();
+  }
+};
+
+module.exports = {
+  loginValidation,
+  addEmployeeValidation,
+  editRoleValidation,
+  editPasswordValidation,
+  validateDevisiChange,
+  editPersDocsValidation,
+};
