@@ -265,7 +265,8 @@
                   "jabatan",
                   "devisiId",
                   "roleId",
-                  "status"
+                  "status",
+                  "employee_status"
                 ],
                 "properties": {
                   "nama_lengkap": {
@@ -290,6 +291,9 @@
                   "status": {
                     "type": "boolean",
                     "description": "jika tidak maka secara otomatis terisi true"
+                  },
+                  "employee_status": {
+                    "type": "string"
                   }
                 }
               }
