@@ -3,6 +3,7 @@ const { url } = require("./cloudinary");
 const Role = db.role;
 const User = db.user;
 const Persdocs = db.persdocs;
+const Devisi = db.devisi;
 
 const loginValidation = async (req, res, next) => {
   const { email } = req.body;
@@ -140,6 +141,21 @@ const addEmployeeValidation = async (req, res, next) => {
     return res
       .status(400)
       .json({ meta: { status: 400, message: "employee_status harus di isi" } });
+  }
+
+  const findDevisi = await Devisi.findOne({
+    where: {
+      id: devisiId,
+    },
+  });
+
+  if (!findDevisi) {
+    return res.status(404).json({
+      meta: {
+        status: 404,
+        message: `Devisi dengan id ${devisiId} tidak ditemukan`,
+      },
+    });
   }
 
   next();

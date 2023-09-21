@@ -2,11 +2,20 @@ const multer = require("multer");
 
 function fileFilter(req, file, cb) {
   if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/)) {
-    return cb(
-      new Error(
-        "Hanya diperbolehkan mengunggah gambar (jpg, jpeg, png) atau file PDF"
-      )
-    );
+    // return cb(
+    //   new Error(
+    //     "Hanya diperbolehkan mengunggah gambar (jpg, jpeg, png) atau file PDF"
+    //   )
+    // );
+    return res
+      .status(400)
+      .json({
+        meta: {
+          status: 404,
+          message:
+            "Hanya diperbolehkan mengunggah gambar (jpg, jpeg, png) atau file PDF",
+        },
+      });
   }
   cb(null, true);
 }
