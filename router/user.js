@@ -9,6 +9,7 @@ const {
   editRole,
   changeUserDevisi,
   uploudPersDocs,
+  updateStatusUser,
 } = require("../controller/user");
 const {
   verifyToken,
@@ -46,5 +47,6 @@ router.put(
   editPersDocsValidation,
   uploudPersDocs
 );
+router.put("/user/status/:id", verifyTokenAdmin, updateStatusUser);
 
 module.exports = router;

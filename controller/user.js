@@ -442,6 +442,41 @@ const uploudPersDocs = async (req, res) => {
   }
 };
 
+const updateStatusUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findUser = await User.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!findUser) {
+      return res.status(404).json({
+        meta: {
+          status: 404,
+          message: `User dengan id ${id} tidak ditemukan`,
+        },
+      });
+    } else {
+      await User.update(
+        { status: false },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      return res
+        .status(200)
+        .json({ meta: { status: 200, message: "Success ganti status user" } });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   addEmployee,
   login,
@@ -452,4 +487,5 @@ module.exports = {
   editRole,
   changeUserDevisi,
   uploudPersDocs,
+  updateStatusUser,
 };
