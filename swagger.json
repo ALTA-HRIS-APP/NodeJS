@@ -1090,6 +1090,121 @@
           }
         }
       }
+    },
+    "/persdocs/{id}": {
+      "put": {
+        "description": "Edit Role User",
+        "tags": ["Docs"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Masukkan Id User yang ingin di edit dokumennya",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "no_kk": {
+                    "type": "string",
+                    "description": "input no kk",
+                    "required": false
+                  },
+                  "url_kk": { "type": "file", "required": false },
+                  "no_npwp": {
+                    "type": "string",
+                    "description": "input no npwp",
+                    "required": false
+                  },
+                  "url_npwp": { "type": "file", "required": false },
+                  "no_bpjs": {
+                    "type": "string",
+                    "description": "input no bpjs",
+                    "required": false
+                  },
+                  "url_bpjs": { "type": "file", "required": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "number",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Success Update Docs User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error please input file format .jpg,.png",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Please input file format .jpg, .png"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
