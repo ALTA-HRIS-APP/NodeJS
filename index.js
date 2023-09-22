@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 app.use("/", userRoute);
 app.use("/", devisiRoute);
 app.use("/", roleRoute);
-app.use("/", detailCompanyRoute);
+app.use("/", detailcompanyRoute);
 
 app.listen(port, () => {
   console.log(`Server berjalan di http://localhost:${port}`);
