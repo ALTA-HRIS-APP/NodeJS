@@ -44,7 +44,10 @@ const updateDevisi = async (req, res) => {
           id: id,
         },
       });
-      await Devisi.update({ nama: nama || findDevisi.nama });
+      await Devisi.update(
+        { nama: nama || findDevisi.nama },
+        { where: { id: findDevisi.id } }
+      );
 
       return res.status(200).json({
         meta: {
@@ -72,4 +75,38 @@ const deleteDevisi = async (req, res) => {
   }
 };
 
-module.exports = { getAllDevisi, createDevisi, updateDevisi, deleteDevisi };
+const getdevisibyid = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findDevisi = await Devisi.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!findDevisi) {
+      return res.status(404).json({
+        meta: {
+          status: 404,
+          message: `Devisi dengan id ${id} tidak ditemukan`,
+        },
+      });
+    } else {
+      return res.status(200).json({
+        meta: { status: 200, message: "Berhasil ambil data Devisi" },
+        data: findDevisi,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = {
+  getAllDevisi,
+  createDevisi,
+  updateDevisi,
+  deleteDevisi,
+  getdevisibyid,
+};

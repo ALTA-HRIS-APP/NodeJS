@@ -25,6 +25,7 @@ app.use(cors({ credentials: true }));
 const userRoute = require("./router/user");
 const devisiRoute = require("./router/devisi");
 const roleRoute = require("./router/role");
+const detailCompanyRoute = require("./router/detailcompany");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/", (req, res) => {
@@ -33,7 +34,7 @@ app.get("/", (req, res) => {
 app.use("/", userRoute);
 app.use("/", devisiRoute);
 app.use("/", roleRoute);
-app.use("/", detailcompanyRoute);
+app.use("/", detailCompanyRoute);
 
 app.listen(port, () => {
   console.log(`Server berjalan di http://localhost:${port}`);

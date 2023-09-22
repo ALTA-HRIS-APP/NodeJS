@@ -4,6 +4,7 @@ const {
   createDevisi,
   updateDevisi,
   deleteDevisi,
+  getdevisibyid,
 } = require("../controller/devisi");
 const {
   createValidation,
@@ -27,5 +28,6 @@ router.delete(
   deleteValidation,
   deleteDevisi
 );
+router.get("/devisi/:id", getdevisibyid);
 
 module.exports = router;
