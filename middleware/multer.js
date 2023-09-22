@@ -1,23 +1,24 @@
 const multer = require("multer");
 
 function fileFilter(req, file, cb) {
-  if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/)) {
-    // return cb(
-    //   new Error(
-    //     "Hanya diperbolehkan mengunggah gambar (jpg, jpeg, png) atau file PDF"
-    //   )
-    // );
-    return res
-      .status(400)
-      .json({
-        meta: {
-          status: 404,
-          message:
-            "Hanya diperbolehkan mengunggah gambar (jpg, jpeg, png) atau file PDF",
-        },
-      });
+  if (file && file.originalname) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/)) {
+      // Berkas tidak sesuai dengan ekstensi yang diizinkan
+      // Panggil callback dengan kesalahan
+      cb(
+        new Error(
+          "Hanya diperbolehkan mengunggah gambar (jpg, jpeg, png) atau file PDF"
+        ),
+        false
+      );
+    } else {
+      // Berkas sesuai dengan ekstensi yang diizinkan
+      cb(null, true);
+    }
+  } else {
+    // Handle kasus di mana 'file' atau 'originalname' tidak terdefinisi
+    cb(new Error("File tidak valid"), false);
   }
-  cb(null, true);
 }
 
 const storage = multer.diskStorage({});
