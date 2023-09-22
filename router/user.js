@@ -28,12 +28,13 @@ const {
 } = require("../middleware/user");
 const db = require("../models");
 const uploud = require("../middleware/multer");
+const multer = require("multer");
 const router = express.Router();
 
 router.post(`/user`, verifyTokenAdmin, addEmployeeValidation, addEmployee);
 router.post("/login", loginValidation, login);
 router.post("/editPassword", editPassword, editPasswordValidation);
-router.get("/user", getAll);
+router.get("/user", verifyTokenAdmin, getAll);
 router.get("/profile", verifyToken, getUserbyId);
 router.put("/user/role", verifyTokenSuperAdmin, editRoleValidation, editRole);
 router.get("/user/:id", getUserbyIdParams);
@@ -47,7 +48,21 @@ router.put(
     { name: "url_npwp", maxCount: 1 },
   ]),
   editPersDocsValidation,
-  uploudPersDocs
+  uploudPersDocs,
+  (err, req, res, next) => {
+    // Tangani kesalahan pengunggahan di sini
+    if (err instanceof multer.MulterError) {
+      // Kesalahan Multer (misalnya, ukuran file terlalu besar)
+      res.status(400).json({
+        error: "Kesalahan pengunggahan: " + err.message,
+      });
+    } else {
+      // Kesalahan lainnya (misalnya, filter yang tidak sesuai)
+      res.status(400).json({
+        meta: { status: 400, message: err.message },
+      });
+    }
+  }
 );
 router.put("/user/status/:id", verifyTokenAdmin, updateStatusUser);
 router.post("/editProfile", editProfile, editUserValidation,)
