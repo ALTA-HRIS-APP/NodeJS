@@ -10,6 +10,7 @@ const {
   changeUserDevisi,
   uploudPersDocs,
   updateStatusUser,
+  editProfile,
 } = require("../controller/user");
 const {
   verifyToken,
@@ -23,6 +24,7 @@ const {
   editPasswordValidation,
   validateDevisiChange,
   editPersDocsValidation,
+  editUserValidation,
 } = require("../middleware/user");
 const db = require("../models");
 const uploud = require("../middleware/multer");
@@ -48,5 +50,6 @@ router.put(
   uploudPersDocs
 );
 router.put("/user/status/:id", verifyTokenAdmin, updateStatusUser);
+router.post("/editProfile", editProfile, editUserValidation,)
 
 module.exports = router;
