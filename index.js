@@ -25,6 +25,7 @@ app.use(cors({ credentials: true }));
 const userRoute = require("./router/user");
 const devisiRoute = require("./router/devisi");
 const roleRoute = require("./router/role");
+const detailcompanyRoute = require("./router/detailcompany")
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/", (req, res) => {
