@@ -312,6 +312,71 @@ const editPersDocsValidation = async (req, res, next) => {
   }
 };
 
+const editUserValidation = async (req, res, next) => {
+  const {
+    nama_lengkap,
+    alamat,
+    no_hp,
+    email,
+    jabatan,
+    password,
+    status,
+  } = req.body;
+
+  if (!nama_lengkap) {
+    return res.status(400).json({
+      meta: { status: 400, message: "Nama lengkap harus diisi" },
+    });
+  }
+
+  if (!alamat) {
+    return res.status(400).json({
+      meta: { status: 400, message: "Alamat harus diisi" },
+    });
+  }
+
+  if (!no_hp) {
+    return res.status(400).json({
+      meta: { status: 400, message: "Nomor HP harus diisi" },
+    });
+  }
+
+  if (!email) {
+    return res.status(400).json({
+      meta: { status: 400, message: "Email harus diisi" },
+    });
+  }
+
+  if (!jabatan) {
+    return res.status(400).json({
+      meta: { status: 400, message: "Jabatan harus diisi" },
+    });
+  }
+
+  if (password && !isValidPassword(password)) {
+    return res.status(400).json({
+      meta: {
+        status: 400,
+        message:
+          "Kata sandi harus terdiri dari minimal 8 karakter, minimal 1 huruf kapital, minimal 1 angka, dan minimal 1 simbol",
+      },
+    });
+  }
+
+  if (status === undefined || status === null) {
+    return res.status(400).json({
+      meta: { status: 400, message: "Status harus diisi" },
+    });
+  }
+
+  next();
+};
+
+const isValidPassword = (password) => {
+  const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/;
+  return passwordRegex.test(password);
+};
+
 module.exports = {
   loginValidation,
   addEmployeeValidation,
@@ -319,4 +384,5 @@ module.exports = {
   editPasswordValidation,
   validateDevisiChange,
   editPersDocsValidation,
+  editUserValidation,
 };

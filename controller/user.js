@@ -477,6 +477,53 @@ const updateStatusUser = async (req, res) => {
   }
 };
 
+const editProfile = async (req, res) => {
+  const { nama_lengkap, alamat, no_hp, jabatan, kata_sandi } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        meta: {
+          status: 404,
+          message: "User tidak ditemukan",
+        },
+      });
+    }
+
+    user.nama_lengkap = nama_lengkap || user.nama_lengkap;
+    user.alamat = alamat || user.alamat;
+    user.no_hp = no_hp || user.no_hp;
+    user.jabatan = jabatan || user.jabatan;
+
+    if (kata_sandi) {
+      const salt = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(kata_sandi, salt);
+      user.kata_sandi = hashPassword;
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      meta: { status: 200, message: "Berhasil update profil user" },
+      data: user,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      meta: { status: 500, message: "Terjadi kesalahan server" },
+    });
+  }
+};
+
 module.exports = {
   addEmployee,
   login,
@@ -488,4 +535,5 @@ module.exports = {
   changeUserDevisi,
   uploudPersDocs,
   updateStatusUser,
+  editProfile,
 };
